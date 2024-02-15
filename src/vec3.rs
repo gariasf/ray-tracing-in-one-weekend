@@ -2,7 +2,7 @@ use std::ops::{Add, Sub, Mul, Div, Neg, Index, IndexMut};
 use std::fmt;
 
 #[derive(Clone, Copy, Debug)]
-pub(crate) struct  Vec3 {
+pub(crate) struct Vec3 {
     elements: [f64; 3],
 }
 
