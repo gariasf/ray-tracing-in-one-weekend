@@ -8,8 +8,9 @@ fn main() -> io::Result<()> {
 
     let mut file = File::create("output.ppm")?;
     writeln!(file, "P3\n{IMAGE_WIDTH} {IMAGE_HEIGHT}\n255")?;
-
     for h in 0..IMAGE_HEIGHT {
+        eprintln!("Scanlines remaining: {} ", IMAGE_HEIGHT - h);
+
         for w in 0..IMAGE_WIDTH {
             let red  = w as f64  / (IMAGE_WIDTH - 1) as f64;
             let green = h as f64  / (IMAGE_HEIGHT - 1) as f64;
@@ -22,6 +23,6 @@ fn main() -> io::Result<()> {
             writeln!(file, "{normalised_red} {normalised_green} {normalised_blue}")?;
         }
     }
-
+    eprintln!("\nDone.");
     Ok(())
 }
