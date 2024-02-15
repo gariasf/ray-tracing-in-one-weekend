@@ -1,3 +1,6 @@
+mod vec3;
+mod color;
+
 use std::fs::File;
 use std::io::{self, Write};
 
@@ -12,15 +15,12 @@ fn main() -> io::Result<()> {
         eprintln!("Scanlines remaining: {} ", IMAGE_HEIGHT - h);
 
         for w in 0..IMAGE_WIDTH {
-            let red  = w as f64  / (IMAGE_WIDTH - 1) as f64;
-            let green = h as f64  / (IMAGE_HEIGHT - 1) as f64;
-            let blue = 0.0f64;
-
-            let normalised_red  = (255.999 * red) as i32;
-            let normalised_green   = (255.999 * green) as i32;
-            let normalised_blue  = (255.999 * blue) as i32;
-
-            writeln!(file, "{normalised_red} {normalised_green} {normalised_blue}")?;
+            let pixel_color = color::Color::new(
+                w as f64 / (IMAGE_WIDTH - 1) as f64,
+                h as f64 / (IMAGE_HEIGHT - 1) as f64,
+                0.0,
+            );
+            color::write_color(&mut file, pixel_color)?;
         }
     }
     eprintln!("\nDone.");
