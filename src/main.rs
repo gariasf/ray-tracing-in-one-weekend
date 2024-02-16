@@ -25,7 +25,7 @@ fn main() {
     const IMAGE_WIDTH: f64 = 400f64;
 
     // Camera
-    let mut camera = Camera::new(ASPECT_RATIO, IMAGE_WIDTH, 100);
+    let mut camera = Camera::new(ASPECT_RATIO, IMAGE_WIDTH, 100, 50);
 
     let _ = camera.render(&world);
 }

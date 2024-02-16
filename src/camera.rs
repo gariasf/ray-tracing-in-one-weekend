@@ -13,6 +13,7 @@ pub(crate) struct Camera {
     pub(crate) aspect_ratio: f64,
     pub(crate) image_width: f64,
     pub(crate) samples_per_pixel: i32,
+    pub(crate) max_depth: i32,
 
     // Private
     image_height: i32,
@@ -23,11 +24,12 @@ pub(crate) struct Camera {
 }
 
 impl Camera {
-    pub fn new(aspect_ratio: f64, image_width: f64, samples_per_pixel: i32) -> Self {
+    pub fn new(aspect_ratio: f64, image_width: f64, samples_per_pixel: i32, max_depth: i32) -> Self {
         Camera {
             aspect_ratio,
             image_width,
             samples_per_pixel,
+            max_depth,
             image_height: 0,
             center: Point3::new(0.0, 0.0, 0.0),
             pixel00_loc: Point3::new(0.0, 0.0, 0.0),
@@ -50,7 +52,7 @@ impl Camera {
 
                 for _ in 0..self.samples_per_pixel {
                     let ray: Ray = Self::get_ray(self, w, h);
-                    let ray_color: Color = Self::ray_color(&ray, world);
+                    let ray_color: Color = Self::ray_color(&ray, self.max_depth, world);
                     pixel_color = pixel_color + ray_color;
                 }
 
@@ -104,13 +106,18 @@ impl Camera {
         return px * self.pixel_delta_u + py * self.pixel_delta_v
     }
 
-    fn ray_color(ray: &Ray, world: &dyn Hittable) -> Color {
+    fn ray_color(ray: &Ray, depth: i32, world: &dyn Hittable) -> Color {
+        // If we've exerted the maximum depth, no more light is gathered.
+        if depth <= 0 {
+            return Color::new(0.0, 0.0, 0.0);
+        }
+
         let mut hit_record: HitRecord = HitRecord::new(Point3::new(0.0, 0.0, 0.0), Vec3::new(0.0, 0.0, 0.0), 0.0, false);
 
-        if world.hit(ray, Interval::with_bounds(0.0, f64::INFINITY), &mut hit_record) {
+        if world.hit(ray, Interval::with_bounds(0.001, f64::INFINITY), &mut hit_record) {
             let direction = random_in_hemisphere(hit_record.normal);
             let ray: Ray = Ray::new(hit_record.point, direction);
-            return 0.5 * (Self::ray_color(&ray, world));
+            return 0.5 * (Self::ray_color(&ray, depth - 1, world));
         }
 
         let unit_direction: Vec3 = unit_vector(ray.direction());
