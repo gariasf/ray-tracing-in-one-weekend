@@ -5,19 +5,21 @@ mod hittable;
 mod sphere;
 mod hittables;
 mod utils;
+mod interval;
 
 use std::fs::File;
 use std::io::{self, Write};
 use color::{Color};
-use vec3::{Vec3, Point3, unit_vector, dot};
+use vec3::{Vec3, Point3, unit_vector};
 use ray::{Ray};
 use hittable::{HitRecord, Hittable};
 use hittables::{HittableList};
+use crate::interval::Interval;
 
 fn ray_color(ray: &Ray, world: &dyn Hittable) -> Color {
     let mut hit_record: HitRecord = HitRecord::new(Point3::new(0.0, 0.0, 0.0), Vec3::new(0.0, 0.0, 0.0), 0.0, false);
 
-    if(world.hit(ray, 0.0, f64::INFINITY, &mut hit_record)) {
+    if world.hit(ray, Interval::with_bounds(0.0, f64::INFINITY), &mut hit_record) {
         let normal: Vec3 = hit_record.normal;
         let white = Color::new(1.0, 1.0, 1.0);
         return 0.5 * (normal + white);
