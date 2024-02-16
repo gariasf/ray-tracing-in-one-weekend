@@ -5,11 +5,16 @@ use crate::color::Color;
 use crate::hittable::{HitRecord, Hittable};
 use crate::interval::Interval;
 use crate::ray::Ray;
+use crate::utils::random_float;
 use crate::vec3::{Point3, unit_vector, Vec3};
 
 pub(crate) struct Camera {
+    // Public
     pub(crate) aspect_ratio: f64,
     pub(crate) image_width: f64,
+    pub(crate) samples_per_pixel: i32,
+
+    // Private
     image_height: i32,
     center: Point3,
     pixel00_loc: Point3,
@@ -18,10 +23,11 @@ pub(crate) struct Camera {
 }
 
 impl Camera {
-    pub fn new(aspect_ratio: f64, image_width: f64) -> Self {
+    pub fn new(aspect_ratio: f64, image_width: f64, samples_per_pixel: i32) -> Self {
         Camera {
             aspect_ratio,
             image_width,
+            samples_per_pixel,
             image_height: 0,
             center: Point3::new(0.0, 0.0, 0.0),
             pixel00_loc: Point3::new(0.0, 0.0, 0.0),
@@ -40,12 +46,15 @@ impl Camera {
             eprintln!("Scanlines remaining: {} ", self.image_height - h);
 
             for w in 0..self.image_width as i32 {
-                let pixel_center: Vec3 = self.pixel00_loc + w as f64 * self.pixel_delta_u + h as f64 * self.pixel_delta_v;
-                let ray_direction: Vec3 = pixel_center - self.center;
-                let ray: Ray = Ray::new(self.center, ray_direction);
-                let pixel_color: Color = Self::ray_color(&ray, world);
+                let mut pixel_color: Color = Color::new(0.0, 0.0, 0.0);
 
-                color::write_color(&mut file, pixel_color)?;
+                for _ in 0..self.samples_per_pixel {
+                    let ray: Ray = Self::get_ray(self, w, h);
+                    let ray_color: Color = Self::ray_color(&ray, world);
+                    pixel_color = pixel_color + ray_color;
+                }
+
+                color::write_color(&mut file, pixel_color, self.samples_per_pixel)?;
             }
         }
         eprintln!("\nDone.");
@@ -77,6 +86,22 @@ impl Camera {
         // Calculate the location of the upper left pixel.
         let viewport_upper_left: Vec3 = self.center - Vec3::new(0.0, 0.0, FOCAL_LENGTH) - viewport_u / 2.0 - viewport_v / 2.0;
         self.pixel00_loc = viewport_upper_left + 0.5 * (self.pixel_delta_u + self.pixel_delta_v);
+    }
+
+    fn get_ray(&self, u: i32, v: i32) -> Ray {
+        // Get a randomly sampled camera ray for the pixel at location i,j.
+        let pixel_center: Vec3 = self.pixel00_loc + (u as f64 * self.pixel_delta_u + v as f64 * self.pixel_delta_v);
+        let pixel_sample = pixel_center + Self::pixel_sample_square(self);
+        let ray_origin = self.center;
+        let ray_direction: Vec3 = pixel_sample - ray_origin;
+        return Ray::new(ray_origin, ray_direction)
+    }
+
+    fn pixel_sample_square(&self) -> Vec3 {
+        // Returns a random point in the square surrounding a pixel at the origin
+        let px = -0.5 + random_float();
+        let py = -0.5 + random_float();
+        return px * self.pixel_delta_u + py * self.pixel_delta_v
     }
 
     fn ray_color(ray: &Ray, world: &dyn Hittable) -> Color {
