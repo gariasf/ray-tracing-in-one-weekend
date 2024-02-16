@@ -1,9 +1,8 @@
 use std::fs::File;
 use std::io::{self, Write};
-use crate::{color, sphere};
+use crate::{color};
 use crate::color::Color;
 use crate::hittable::{HitRecord, Hittable};
-use crate::hittables::HittableList;
 use crate::interval::Interval;
 use crate::ray::Ray;
 use crate::vec3::{Point3, unit_vector, Vec3};

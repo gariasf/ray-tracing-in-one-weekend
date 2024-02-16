@@ -8,11 +8,8 @@ mod utils;
 mod interval;
 mod camera;
 
-use std::fs::File;
-use std::io::{self, Write};
-use color::{Color};
-use vec3::{Vec3, Point3};
-use ray::{Ray};
+use std::io::{Write};
+use vec3::{Point3};
 use hittable::{Hittable};
 use hittables::{HittableList};
 use crate::camera::Camera;
