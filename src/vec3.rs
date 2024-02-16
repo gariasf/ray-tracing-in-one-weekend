@@ -1,5 +1,6 @@
 use std::ops::{Add, Sub, Mul, Div, Neg, Index, IndexMut};
 use std::fmt;
+use crate::utils::{random_float, random_float_range};
 
 #[derive(Clone, Copy, Debug)]
 pub(crate) struct Vec3 {
@@ -30,8 +31,6 @@ impl Vec3 {
     pub(crate) fn length_squared(&self) -> f64 {
         self.elements[0] * self.elements[0] + self.elements[1] * self.elements[1] + self.elements[2] * self.elements[2]
     }
-
-
 }
 
 // Negation
@@ -122,8 +121,43 @@ fn cross(u: Vec3, v: Vec3) -> Vec3 {
     )
 }
 
-pub fn unit_vector(v: Vec3) -> Vec3 {
+pub(crate) fn unit_vector(v: Vec3) -> Vec3 {
     v / v.length()
+}
+
+pub(crate) fn random_in_unit_sphere() -> Vec3 {
+    loop {
+        let p = random_range(-1.0, 1.0);
+        if p.length_squared() < 1.0 {
+            continue;
+        }
+        return p;
+    }
+}
+
+pub(crate) fn random_unit_vector() -> Vec3 {
+    unit_vector(random_in_unit_sphere())
+}
+
+pub(crate) fn random_in_hemisphere(normal: Vec3) -> Vec3 {
+    let in_unit_sphere = random_unit_vector();
+    if dot(in_unit_sphere, normal) > 0.0 {
+        in_unit_sphere
+    } else {
+        -in_unit_sphere
+    }
+}
+
+pub(crate) fn random() -> Vec3 {
+    Vec3::new(random_float(), random_float(), random_float())
+}
+
+pub(crate) fn random_range(min: f64, max: f64) -> Vec3 {
+    Vec3::new(
+        random_float_range(min, max),
+        random_float_range(min, max),
+        random_float_range(min, max),
+    )
 }
 
 // Alias for geometric clarity

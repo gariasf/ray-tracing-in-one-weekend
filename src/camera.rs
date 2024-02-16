@@ -6,7 +6,7 @@ use crate::hittable::{HitRecord, Hittable};
 use crate::interval::Interval;
 use crate::ray::Ray;
 use crate::utils::random_float;
-use crate::vec3::{Point3, unit_vector, Vec3};
+use crate::vec3::{Point3, random_in_hemisphere, unit_vector, Vec3};
 
 pub(crate) struct Camera {
     // Public
@@ -108,9 +108,9 @@ impl Camera {
         let mut hit_record: HitRecord = HitRecord::new(Point3::new(0.0, 0.0, 0.0), Vec3::new(0.0, 0.0, 0.0), 0.0, false);
 
         if world.hit(ray, Interval::with_bounds(0.0, f64::INFINITY), &mut hit_record) {
-            let normal: Vec3 = hit_record.normal;
-            let white = Color::new(1.0, 1.0, 1.0);
-            return 0.5 * (normal + white);
+            let direction = random_in_hemisphere(hit_record.normal);
+            let ray: Ray = Ray::new(hit_record.point, direction);
+            return 0.5 * (Self::ray_color(&ray, world));
         }
 
         let unit_direction: Vec3 = unit_vector(ray.direction());
