@@ -6,11 +6,23 @@ use std::fs::File;
 use std::io::{self, Write};
 use std::ops::Div;
 use color::{Color};
-use vec3::{Vec3, Point3};
+use vec3::{Vec3, Point3, unit_vector, dot};
 use ray::{Ray};
-use crate::vec3::unit_vector;
+
+fn hit_sphere(center: Point3, radius: f64, r: &Ray) -> bool {
+    let oc: Vec3 = r.origin() - center;
+    let a: f64 = dot(r.direction(), r.direction());
+    let b: f64 = 2.0 * dot(oc, r.direction());
+    let c: f64 = dot(oc, oc) - radius * radius;
+    let discriminant: f64 = b * b - 4.0 * a * c;
+    return discriminant >= 0.0;
+}
 
 fn ray_color(r: &Ray) -> Color {
+    if(hit_sphere(Point3::new(0.0, 0.0, -1.0), 0.5, r)) {
+        return Color::new(1.0, 0.0, 0.0);
+    }
+
     let unit_direction: Vec3 = unit_vector(r.direction());
     const START_VALUE : f64 = 0.5;
     const END_VALUE : f64 = 1.0;
