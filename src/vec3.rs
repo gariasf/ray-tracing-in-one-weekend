@@ -153,6 +153,15 @@ pub(crate) fn unit_vector(v: Vec3) -> Vec3 {
     v / v.length()
 }
 
+pub(crate) fn random_in_unit_disk() -> Vec3 {
+    loop {
+        let p = Vec3::new(random_float_range(-1.0, 1.0), random_float_range(-1.0, 1.0), 0.0);
+        if p.length_squared() < 1.0 {
+            return p;
+        }
+    }
+}
+
 pub(crate) fn random_in_unit_sphere() -> Vec3 {
     loop {
         let p = random_range(-1.0, 1.0);

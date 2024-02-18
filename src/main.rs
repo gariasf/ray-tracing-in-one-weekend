@@ -8,7 +8,6 @@ use crate::camera::Camera;
 use crate::color::Color;
 use crate::material::{Dielectric, Lambertian, Metal};
 use crate::sphere::Sphere;
-use crate::utils::PI;
 use crate::vec3::Vec3;
 
 mod vec3;
@@ -26,8 +25,6 @@ fn main() {
     // World
     let mut world: HittableList = HittableList::new();
 
-    let r: f64 = (PI / 4.0).cos();
-
 
     let material_ground = Rc::new(RefCell::new(Lambertian { albedo: Color::new(0.8, 0.8, 0.0) }));
     let material_center = Rc::new(RefCell::new(Lambertian { albedo: Color::new(0.1, 0.2, 0.5) }));
@@ -44,7 +41,17 @@ fn main() {
     const IMAGE_WIDTH: f64 = 400f64;
 
     // Camera
-    let mut camera = Camera::new(ASPECT_RATIO, IMAGE_WIDTH, 100, 50, 20.0, Point3::new(-2.0, 2.0, 1.0), Point3::new(0.0, 0.0, -1.0), Vec3::new(0.0, 1.0, 0.0));
+    let mut camera = Camera::new(
+        ASPECT_RATIO, IMAGE_WIDTH,
+        100,
+        50,
+        20.0,
+        Point3::new(-2.0, 2.0, 1.0),
+        Point3::new(0.0, 0.0, -1.0),
+        Vec3::new(0.0, 1.0, 0.0),
+        10.0,
+        3.4,
+    );
 
     let _ = camera.render(&world);
 }
