@@ -1,5 +1,6 @@
-use std::ops::{Add, Sub, Mul, Div, Neg, Index, IndexMut};
 use std::fmt;
+use std::ops::{Add, Div, Index, IndexMut, Mul, Neg, Sub};
+
 use crate::utils::{random_float, random_float_range};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -43,6 +44,13 @@ impl Vec3 {
 
 pub(crate) fn reflect(v: Vec3, n: Vec3) -> Vec3 {
     v - n * 2.0 * dot(v, n)
+}
+
+pub(crate) fn refract(uv: Vec3, n: Vec3, etai_over_etat: f64) -> Vec3 {
+    let cos_theta: f64 = dot(-uv, n).min(1.0);
+    let r_out_perp: Vec3 = (uv + n * cos_theta) * etai_over_etat;
+    let r_out_parallel: Vec3 = n * -(1.0 - r_out_perp.length_squared()).abs().sqrt();
+    r_out_perp + r_out_parallel
 }
 
 // Negation

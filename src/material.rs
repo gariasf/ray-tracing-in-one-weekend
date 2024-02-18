@@ -1,8 +1,8 @@
 use crate::color::Color;
 use crate::hittable::HitRecord;
 use crate::ray::Ray;
-use crate::vec3::{random_unit_vector, reflect, unit_vector, Vec3};
-
+use crate::utils::random_float;
+use crate::vec3::{dot, random_unit_vector, reflect, refract, unit_vector, Vec3};
 
 pub(crate) trait MaterialTrait  {
     fn scatter(&self, ray_in: &Ray, hit_record: &HitRecord) -> Option<(Color, Ray)>;
@@ -50,4 +50,43 @@ impl MaterialTrait for Metal {
         let attenuation = self.albedo;
         Some((attenuation, scattered))
     }
+}
+
+pub struct Dielectric {
+    pub refraction_index: f64,
+}
+
+impl MaterialTrait for Dielectric {
+    fn scatter(&self, ray_in: &Ray, hit_record: &HitRecord) -> Option<(Color, Ray)> {
+        let refraction_ratio = if hit_record.front_face {
+            1.0 / self.refraction_index
+        } else {
+            self.refraction_index
+        };
+
+        let unit_direction = unit_vector(ray_in.direction());
+
+        let cos_theta = f64::min(dot(-unit_direction, hit_record.normal), 1.0);
+        let sin_theta = (1.0 - cos_theta * cos_theta).sqrt();
+
+        let cannot_refract = refraction_ratio * sin_theta > 1.0;
+        let mut direction = Vec3::new(0.0, 0.0, 0.0);
+
+        if cannot_refract || reflectance(cos_theta, refraction_ratio) > random_float() {
+            direction = reflect(unit_direction, hit_record.normal);
+        } else {
+            direction = refract(unit_direction, hit_record.normal, refraction_ratio);
+        }
+
+        let scattered = Ray::new(hit_record.point, direction);
+
+        Some((Color::new(1.0, 1.0, 1.0), scattered))
+    }
+}
+
+fn reflectance(cosine: f64, refraction_index: f64) -> f64 {
+    // Use Schlick's approximation for reflectance.
+    let r0 = (1.0 - refraction_index) / (1.0 + refraction_index);
+    let r0 = r0 * r0;
+    r0 + (1.0 - r0) * (1.0 - cosine).powi(5)
 }
