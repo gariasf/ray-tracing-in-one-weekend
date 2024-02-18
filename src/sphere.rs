@@ -1,10 +1,12 @@
 use std::cell::RefCell;
 use std::rc::Rc;
+
 use crate::hittable::{HitRecord, Hittable};
 use crate::interval::Interval;
-use crate::material::{Material, MaterialTrait};
+use crate::material::MaterialTrait;
 use crate::ray::Ray;
-use crate::vec3::{Point3, dot, Vec3};
+use crate::vec3::{dot, Point3, Vec3};
+
 pub(crate) struct Sphere {
     center: Point3,
     radius: f64,

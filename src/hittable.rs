@@ -1,10 +1,11 @@
 use std::cell::RefCell;
 use std::rc::Rc;
+
 use crate::color::Color;
 use crate::interval::Interval;
-use crate::material::{Lambertian, Material, MaterialTrait};
-use crate::ray::{Ray};
-use crate::vec3::{Point3, Vec3, dot};
+use crate::material::{Lambertian, MaterialTrait};
+use crate::ray::Ray;
+use crate::vec3::{dot, Point3, Vec3};
 
 #[derive(Clone)]
 pub(crate) struct HitRecord {

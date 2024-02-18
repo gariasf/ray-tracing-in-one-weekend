@@ -26,8 +26,7 @@ pub struct Lambertian {
 }
 
 impl MaterialTrait for Lambertian {
-
-    fn scatter(&self, ray_in: &Ray, rec: &HitRecord) -> Option<(Color, Ray)> {
+    fn scatter(&self, _: &Ray, rec: &HitRecord) -> Option<(Color, Ray)> {
         let mut scatter_direction = rec.normal + random_unit_vector();
         if scatter_direction.near_zero() {
             scatter_direction = rec.normal;

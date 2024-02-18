@@ -25,7 +25,7 @@ impl Vec3 {
         self.elements[2]
     }
 
-    fn length(&self) -> f64 {
+    pub(crate) fn length(&self) -> f64 {
         self.length_squared().sqrt()
     }
 
@@ -141,7 +141,7 @@ pub fn dot(u: Vec3, v: Vec3) -> f64 {
     u.elements[0] * v.elements[0] + u.elements[1] * v.elements[1] + u.elements[2] * v.elements[2]
 }
 
-fn cross(u: Vec3, v: Vec3) -> Vec3 {
+pub(crate) fn cross(u: Vec3, v: Vec3) -> Vec3 {
     Vec3::new(
         u.elements[1] * v.elements[2] - u.elements[2] * v.elements[1],
         u.elements[2] * v.elements[0] - u.elements[0] * v.elements[2],
