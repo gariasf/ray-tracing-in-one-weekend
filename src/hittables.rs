@@ -41,7 +41,7 @@ impl Hittable for HittableList {
             if object.hit(ray, Interval::with_bounds(interval.min, closest_so_far), &mut temp_record) {
                 hit_anything = true;
                 closest_so_far = temp_record.t;
-                *record = temp_record;
+                *record = temp_record.clone();
             }
         }
 

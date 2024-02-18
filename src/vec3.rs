@@ -2,7 +2,7 @@ use std::ops::{Add, Sub, Mul, Div, Neg, Index, IndexMut};
 use std::fmt;
 use crate::utils::{random_float, random_float_range};
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub(crate) struct Vec3 {
     elements: [f64; 3],
 }
@@ -31,6 +31,18 @@ impl Vec3 {
     pub(crate) fn length_squared(&self) -> f64 {
         self.elements[0] * self.elements[0] + self.elements[1] * self.elements[1] + self.elements[2] * self.elements[2]
     }
+
+    pub(crate) fn near_zero(&self) -> bool {
+        // Return true if the vector is close to zero in all dimensions.
+        let s: f64 = 1e-8;
+        self.elements[0].abs() < s && self.elements[1].abs() < s && self.elements[2].abs() < s
+    }
+
+
+}
+
+pub(crate) fn reflect(v: Vec3, n: Vec3) -> Vec3 {
+    v - n * 2.0 * dot(v, n)
 }
 
 // Negation
@@ -89,6 +101,14 @@ impl Mul<Vec3> for f64 {
 
     fn mul(self, v: Vec3) -> Vec3 {
         v * self
+    }
+}
+
+impl Mul for Vec3 {
+    type Output = Vec3;
+
+    fn mul(self, other: Vec3) -> Vec3 {
+        Vec3::new(self.elements[0] * other.elements[0], self.elements[1] * other.elements[1], self.elements[2] * other.elements[2])
     }
 }
 
