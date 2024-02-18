@@ -1,7 +1,7 @@
 use std::fmt;
 use std::ops::{Add, Div, Index, IndexMut, Mul, Neg, Sub};
 
-use crate::utils::{random_float, random_float_range};
+use crate::utils::random_float_range;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub(crate) struct Vec3 {
@@ -176,18 +176,6 @@ pub(crate) fn random_unit_vector() -> Vec3 {
     unit_vector(random_in_unit_sphere())
 }
 
-pub(crate) fn random_in_hemisphere(normal: Vec3) -> Vec3 {
-    let in_unit_sphere = random_unit_vector();
-    if dot(in_unit_sphere, normal) > 0.0 {
-        in_unit_sphere
-    } else {
-        -in_unit_sphere
-    }
-}
-
-pub(crate) fn random() -> Vec3 {
-    Vec3::new(random_float(), random_float(), random_float())
-}
 
 pub(crate) fn random_range(min: f64, max: f64) -> Vec3 {
     Vec3::new(

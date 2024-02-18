@@ -13,18 +13,6 @@ impl HittableList {
         HittableList { objects: Vec::new() }
     }
 
-    // Constructs a `HittableList` with an initial object.
-    fn with_object(object: Box<dyn Hittable>) -> Self {
-        let mut list = HittableList::new();
-        list.add(object);
-        list
-    }
-
-    // Clears all objects from the list.
-    fn clear(&mut self) {
-        self.objects.clear();
-    }
-
     // Adds an object to the list.
     pub(crate) fn add(&mut self, object: Box<dyn Hittable>) {
         self.objects.push(object);

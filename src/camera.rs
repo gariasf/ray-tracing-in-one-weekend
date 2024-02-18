@@ -189,7 +189,7 @@ impl Camera {
             // let direction = hit_record.normal + random_unit_vector();
             // let ray: Ray = Ray::new(hit_record.point, direction);
             let hit: Option<(Color, Ray)> = hit_record.material_ptr.borrow().scatter(ray, &hit_record);
-            if (hit != None) {
+            if hit != None {
                 let (attenuation, scattered) = hit.unwrap();
                 return attenuation * Self::ray_color(&scattered, depth - 1, world);
             }

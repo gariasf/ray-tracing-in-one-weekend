@@ -2,23 +2,10 @@ use crate::color::Color;
 use crate::hittable::HitRecord;
 use crate::ray::Ray;
 use crate::utils::random_float;
-use crate::vec3::{dot, random_unit_vector, reflect, refract, unit_vector, Vec3};
+use crate::vec3::{dot, random_unit_vector, reflect, refract, unit_vector};
 
 pub(crate) trait MaterialTrait  {
     fn scatter(&self, ray_in: &Ray, hit_record: &HitRecord) -> Option<(Color, Ray)>;
-}
-
-pub enum Material {
-    Lambertian(Box<Lambertian>),
-    Metal(Box<Metal>),
-}
-impl Material {
-    pub fn scatter(&self, ray_in: &Ray, hit_record: &HitRecord) -> Option<(Color, Ray)> {
-        match self {
-            Material::Lambertian(material) => material.scatter(ray_in, hit_record),
-            Material::Metal(material) => material.scatter(ray_in, hit_record),
-        }
-    }
 }
 
 pub struct Lambertian {
@@ -69,7 +56,7 @@ impl MaterialTrait for Dielectric {
         let sin_theta = (1.0 - cos_theta * cos_theta).sqrt();
 
         let cannot_refract = refraction_ratio * sin_theta > 1.0;
-        let mut direction = Vec3::new(0.0, 0.0, 0.0);
+        let direction;
 
         if cannot_refract || reflectance(cos_theta, refraction_ratio) > random_float() {
             direction = reflect(unit_direction, hit_record.normal);
