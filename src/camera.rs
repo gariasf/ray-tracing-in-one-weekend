@@ -161,7 +161,8 @@ impl Camera {
         let pixel_sample = pixel_center + Self::pixel_sample_square(self);
         let ray_origin = if self.defocus_angle <= 0.0 { self.center } else { Self::defocus_disk_sample(self) };
         let ray_direction: Vec3 = pixel_sample - ray_origin;
-        return Ray::new(ray_origin, ray_direction);
+        let ray_time: f64 = random_float();
+        return Ray::new(ray_origin, ray_direction, ray_time);
     }
 
     fn defocus_disk_sample(&self) -> Point3 {

@@ -11,18 +11,33 @@ pub(crate) struct Sphere {
     center: Point3,
     radius: f64,
     material_ptr: Rc<RefCell<dyn MaterialTrait>>,
+    is_moving: bool,
+    center_vec: Vec3,
 }
 
 impl Sphere {
-    pub(crate) fn new(center: Point3, radius: f64, material_ptr: Rc<RefCell<dyn MaterialTrait>>) -> Self {
-        Sphere { center, radius, material_ptr }
+    pub(crate) fn new(center: Point3, radius: f64, material_ptr: Rc<RefCell<dyn MaterialTrait>>, center_1: Point3, is_moving: bool) -> Self {
+        Sphere { center, radius, material_ptr, is_moving, center_vec: center_1 - center }
+    }
+
+    pub(crate) fn center(&self, time: f64) -> Point3 {
+        if self.is_moving {
+            return self.center + time * self.center_vec;
+        }
+        self.center
     }
 }
 
 impl Hittable for Sphere {
 
     fn hit(&self, ray: &Ray, ray_t: Interval, record: &mut HitRecord) -> bool {
-        let oc: Point3 = ray.origin() - self.center;
+        let center: Point3 = if self.is_moving {
+            self.center(ray.time())
+        } else {
+            self.center
+        };
+
+        let oc: Point3 = ray.origin() - center;
         let a: f64 = ray.direction().length_squared();
         let half_b: f64 = dot(oc, ray.direction());
         let c: f64 = oc.length_squared() - self.radius * self.radius;
